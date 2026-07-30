@@ -1,10 +1,10 @@
 package gm.zona_fit;
 
 import gm.zona_fit.modelo.Cliente;
-import gm.zona_fit.servicio.IClienteServicio;
+import gm.zona_fit.servicio.ClienteServicio;
+import gm.zona_fit.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,9 +14,12 @@ import java.util.Scanner;
 
 @SpringBootApplication
 public class ZonaFitApplication implements CommandLineRunner {
+	private final ClienteServicio clienteServicio;
 
-	@Autowired
-	private IClienteServicio clienteServicio;
+	ZonaFitApplication(
+			ClienteServicio clienteServicio) {
+		this.clienteServicio = clienteServicio;
+	}
 
 	private static final Logger logger = LoggerFactory.getLogger(ZonaFitApplication.class);
 
@@ -43,7 +46,7 @@ public class ZonaFitApplication implements CommandLineRunner {
 					logger.info("Hasta Pronto!...");
 					exitApp = true;
 				}
-				default -> System.out.println("Opcion no reconocida: " + option);
+				default -> logger.info("Opcion no reconocida: {}",option);
 			}
 
 		}
@@ -51,16 +54,7 @@ public class ZonaFitApplication implements CommandLineRunner {
 	}
 
 
-	private static int leerEntero(Scanner sc, String mensaje) {
-		while (true) {
-			logger.info(mensaje);
-			try {
-				return Integer.parseInt(sc.nextLine().trim());
-			} catch (NumberFormatException e) {
-				logger.info("Error: Por favor, ingrese un número entero válido.\n");
-			}
-		}
-	}
+
 
 	private static int mostrarMenu(Scanner sc) {
 		var menu = """
@@ -72,7 +66,7 @@ public class ZonaFitApplication implements CommandLineRunner {
 				5. Eliminar Cliente
 				6. Salir
 				Elija una Opcion:\s\n""";
-		return leerEntero(sc, menu);
+		return Utils.leerEntero(sc,logger,menu);
 	}
 
 	private void listarClientes() {
@@ -85,11 +79,12 @@ public class ZonaFitApplication implements CommandLineRunner {
 
 
 	private void buscarCliente(Scanner sc) {
-		Integer idCliente = leerEntero(sc, "Ingresa el ID del cliente: ");
-        if(clienteServicio.buscarClientePorId(idCliente) == null) {
-			logger.info("No existe el cliente con el ID: " + idCliente);
+		Integer idCliente = Utils.leerEntero(sc,logger, "Ingresa el ID del cliente: ");
+		Cliente cliente = clienteServicio.buscarClientePorId(idCliente);
+        if(cliente == null) {
+			logger.info("No existe el cliente con el ID: {}",idCliente);
 		}else{
-			logger.info("\n{}\n", clienteServicio.buscarClientePorId(idCliente).toString());
+			logger.info("\n{}\n", cliente.toString());
 		}
 	}
 
@@ -99,7 +94,7 @@ public class ZonaFitApplication implements CommandLineRunner {
 		logger.info("Ingresa el apellido del cliente: ");
 		String apellido = sc.nextLine();
 		logger.info("Ingresa el email del cliente: ");
-		Integer membresia = leerEntero(sc, "Ingresa el membresia: ");
+		Integer membresia = Utils.leerEntero(sc,logger, "Ingresa el membresia: ");
 		Cliente cliente = new Cliente();
 		cliente.setNombre(nombre);
 		cliente.setApellido(apellido);
@@ -109,15 +104,15 @@ public class ZonaFitApplication implements CommandLineRunner {
 	}
 
 	private void modificarCliente(Scanner sc) {
-		Integer idCliente = leerEntero(sc, "Ingresa el ID del cliente: ");
+		Integer idCliente = Utils.leerEntero(sc,logger, "Ingresa el ID del cliente: ");
 		if(clienteServicio.buscarClientePorId(idCliente) == null) {
-			logger.info("Error: Cliente no encontrado: " + idCliente);
+			logger.info("Error: Cliente no encontrado: {}",idCliente);
 		}else{
 			logger.info("Ingresa el nombre del cliente: ");
 			String nombre = sc.nextLine();
 			logger.info("Ingresa el apellido del cliente: ");
 			String apellido = sc.nextLine();
-			Integer membresia = leerEntero(sc, "Ingresa el membresia: ");
+			Integer membresia = Utils.leerEntero(sc,logger, "Ingresa el membresia: ");
 			Cliente cliente = new Cliente(idCliente, nombre, apellido, membresia);
 			clienteServicio.guardarCliente(cliente);
 			logger.info("\n{}\n", cliente.toString());
@@ -125,7 +120,7 @@ public class ZonaFitApplication implements CommandLineRunner {
 	}
 
 	private void eliminarCliente(Scanner sc) {
-		Integer idCliente = leerEntero(sc,"Ingresa el ID del cliente: ");
+		Integer idCliente = Utils.leerEntero(sc,logger,"Ingresa el ID del cliente: ");
 		if(clienteServicio.buscarClientePorId(idCliente) == null) {
 			logger.info("No existe el cliente con el ID {}", idCliente);
 		}else{
