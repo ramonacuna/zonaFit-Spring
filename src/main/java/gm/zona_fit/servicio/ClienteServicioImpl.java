@@ -34,4 +34,15 @@ public class ClienteServicioImpl implements ClienteServicio {
     public void borrarCliente(Integer idCliente) {
         repositorioCliente.deleteById(idCliente);
     }
+
+    @Override
+    public void membresiaExistente(Integer membresia) {
+        if(repositorioCliente.existsByMembresia(membresia)) {
+            throw new IllegalArgumentException("Membresia existente");
+        }else{
+            return;
+        }
+    }
+
+
 }

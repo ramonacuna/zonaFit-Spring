@@ -9,5 +9,6 @@ public interface ClienteServicio {
      Cliente buscarClientePorId(Integer idCliente);
      void guardarCliente(Cliente cliente);
      void borrarCliente(Integer idCliente);
+     void membresiaExistente(Integer membresia);
 
 }
