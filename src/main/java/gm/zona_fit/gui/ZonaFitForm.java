@@ -162,6 +162,7 @@ public class ZonaFitForm extends JFrame {
         String[] cabeceros = {"Id", "Nombre", "Apellido", "Membresia"};
         this.tablaModeloClientes.setColumnIdentifiers(cabeceros);
         this.clientesTabla = new JTable(tablaModeloClientes);
+        this.clientesTabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         listarClientes();
     }
 
