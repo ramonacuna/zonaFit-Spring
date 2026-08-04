@@ -32,17 +32,16 @@ public class ZonaFitForm extends JFrame {
 
     @Autowired
     public ZonaFitForm(ClienteServicio clienteServicio) {
-        this.clienteServicio = clienteServicio ;
+        this.clienteServicio = clienteServicio;
         iniciarForma();
-        guardarButton.addActionListener(e -> {
-            guardarCliente();
-        });
-        limpiarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                limpiarTexto();
-            }
-        });
+        iniciarListeners();
+    }
+
+    private void iniciarListeners() {
+        guardarButton.addActionListener(e -> guardarCliente());
+
+        limpiarButton.addActionListener(e -> limpiarTexto());
+
         clientesTabla.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -50,21 +49,19 @@ public class ZonaFitForm extends JFrame {
                 cargarClienteSeleccionado();
             }
         });
-        eliminarButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(idCargado != null){
-                    try {
-                        clienteServicio.borrarCliente(idCargado);
-                        limpiarTexto();
-                        listarClientes();
-                        mostrarMensaje("Cliente eliminado exitosamente");
-                    } catch (Exception ex) {
-                        mostrarMensaje("Error al eliminar el cliente: " + ex.getMessage());
-                    }
-                } else {
-                    mostrarMensaje("Selecciona un cliente de la tabla para eliminar");
+
+        eliminarButton.addActionListener(e -> {
+            if (idCargado != null) {
+                try {
+                    clienteServicio.borrarCliente(idCargado);
+                    limpiarTexto();
+                    listarClientes();
+                    mostrarMensaje("Cliente eliminado exitosamente");
+                } catch (Exception ex) {
+                    mostrarMensaje("Error al eliminar el cliente: " + ex.getMessage());
                 }
+            } else {
+                mostrarMensaje("Selecciona un cliente de la tabla para eliminar");
             }
         });
     }
